@@ -1,0 +1,2 @@
+import purge_outbound_link_files
+import purge_article_files
