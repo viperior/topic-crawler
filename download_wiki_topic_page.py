@@ -23,4 +23,4 @@ def download_wiki_topic_page(topic):
         else:
             print('Error occurred while trying to retrieve the page.')
             print('URL: ' + wiki_article_url)
-            print('Response code: ' + response_code)
+            print('Response code: ' + str(response_code))
