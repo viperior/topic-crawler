@@ -5,7 +5,7 @@ def download_wiki_topic_page(topic):
     target_content_file_path = 'data/article-' + topic.lower().replace(' ', '-') + '.html'
     wiki_article_url = 'https://en.wikipedia.org/wiki/' + topic.replace(' ', '_')
     
-    if os.path.isfile('target_content_file_path'):
+    if os.path.isfile(target_content_file_path):
         print('Skipping download of wiki article. Copy already exists...')
         print('Skipped: ' + wiki_article_url)
     else:
