@@ -15,3 +15,7 @@ if response_code == 200:
     
     with open(target_content_file_path, 'w') as target_content_file:
         target_content_file.write(response_text)
+else:
+    print('Error occurred while trying to retrieve the page.')
+    print('URL: ' + wiki_article_url)
+    print('Response code: ' + response_code)
