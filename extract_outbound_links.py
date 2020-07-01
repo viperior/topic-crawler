@@ -24,7 +24,7 @@ def extract_outbound_links(topic):
         # Collect each unique link to another wiki topic.
         linked_topics = {}
         
-        for link in article_body_links:
+        for index, link in enumerate(article_body_links):
             link_href = str(link.get('href'))
             
             if link_href[0:6] == '/wiki/':
@@ -35,7 +35,8 @@ def extract_outbound_links(topic):
                     linked_topics[wiki_topic] = {
                         'link_text': link.text,
                         'relative_url': link_href,
-                        'linked_from_topic': topic
+                        'linked_from_topic': topic,
+                        'order_index': index
                     }
         
         with open(output_data_file_path, 'w') as output_file:
