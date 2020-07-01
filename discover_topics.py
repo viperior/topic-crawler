@@ -43,8 +43,6 @@ def discover_topics(topic_wiki_article_relative_url, topic_article_file_path,
     print('Current topic = ' + topic)
             
     for link in outbound_links:
-        print(link)
-        
         if crawl_distance == 0:
             print('Max crawl distance reached...')
         else:
