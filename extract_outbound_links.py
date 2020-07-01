@@ -2,7 +2,7 @@ import bs4
 import json
 import os
 
-def extract_outbound_links(topic):
+def extract_outbound_links(topic_article_file_path, topic):
     output_data_file_path = 'data/outbound_links_' + topic.replace(' ', '_') + \
         '.json'
         
@@ -11,7 +11,7 @@ def extract_outbound_links(topic):
         print(output_data_file_path)
     else:
         # Open the HTML file.
-        with open('data/article-' + topic.replace(' ', '-') + '.html', 'r') as input_file:
+        with open(topic_article_file_path, 'r') as input_file:
             html = input_file.read()
         
         # Parse the HTML with BeautifulSoup4 and extract the primary content.

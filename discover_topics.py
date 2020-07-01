@@ -3,7 +3,8 @@ import extract_outbound_links
 import json
 import time
 
-def discover_topics(starting_topic, crawl_distance=3, crawl_limit_per_node=10):
+def discover_topics(topic_wiki_article_relative_url, topic_article_file_path, 
+                    topic, crawl_distance=3, crawl_limit_per_node=10):
     """Discover topics related to the starting topic.
 
     Keyword arguments:
@@ -13,16 +14,22 @@ def discover_topics(starting_topic, crawl_distance=3, crawl_limit_per_node=10):
     """
     
     print('Beginning topical discovery process...')
-    print('Starting topic = ' + starting_topic)
+    print('Starting topic = ' + topic)
     print('Crawl distance = ' + str(crawl_distance))
     
-    download_wiki_topic_page.download_wiki_topic_page(starting_topic)
-    extract_outbound_links.extract_outbound_links(starting_topic)
+    download_wiki_topic_page.download_wiki_topic_page(
+        topic_wiki_article_relative_url=topic_wiki_article_relative_url,
+        topic=topic
+    )
+    extract_outbound_links.extract_outbound_links(
+        topic_article_file_path=topic_article_file_path,
+        topic=topic
+    )
     print('Sleeping for 3 seconds...')
     time.sleep(3)
     
     outbound_links_file_path = 'data/outbound_links_' + \
-        starting_topic.replace(' ', '_').lower() + '.json'
+        topic.replace(' ', '_').lower() + '.json'
     
     with open(outbound_links_file_path, 'r') as outbound_links_file:
         outbound_links_original = json.load(outbound_links_file)
@@ -33,7 +40,7 @@ def discover_topics(starting_topic, crawl_distance=3, crawl_limit_per_node=10):
         if outbound_links_original[link]['order_index'] + 1 <= crawl_limit_per_node:
             outbound_links[link] = outbound_links_original[link]
             
-    print('Current topic = ' + starting_topic)
+    print('Current topic = ' + topic)
             
     for link in outbound_links:
         print(link)
@@ -43,7 +50,9 @@ def discover_topics(starting_topic, crawl_distance=3, crawl_limit_per_node=10):
         else:
             print('Branching to topic: ' + link)
             discover_topics(
-                starting_topic=link,
+                topic_wiki_article_relative_url=outbound_links[link]['relative_url'],
+                topic_article_file_path='data/article-' + topic.lower().replace(' ', '-') + '.html',
+                topic=link,
                 crawl_distance=crawl_distance - 1,
                 crawl_limit_per_node=crawl_limit_per_node
             )

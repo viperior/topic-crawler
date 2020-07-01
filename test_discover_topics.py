@@ -1,7 +1,11 @@
 import discover_topics
 
+topic = 'nuclear fusion'
+
 discover_topics.discover_topics(
-    starting_topic='nuclear fusion',
-    crawl_distance=1,
-    crawl_limit_per_node=2
+    topic_wiki_article_relative_url='/wiki/Nuclear_fusion',
+    topic_article_file_path='data/article-' + topic.lower().replace(' ', '-') + '.html',
+    topic=topic,
+    crawl_distance=2,
+    crawl_limit_per_node=3
 )
