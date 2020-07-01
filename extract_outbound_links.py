@@ -31,8 +31,9 @@ def extract_outbound_links(topic):
             if link_href[0:6] == '/wiki/':
                 wiki_topic = link_href[6:].replace('_', ' ').lower()
                 
-                if wiki_topic not in linked_topics.keys() and \
-                    wiki_topic[0:5] != 'file:':
+                if wiki_topic not in linked_topics.keys() \
+                    and 'file:' not in wiki_topic \
+                    and 'wikipedia:' not in wiki_topic.lower():
                     linked_topics[wiki_topic] = {
                         'link_text': link.text,
                         'relative_url': link_href,
