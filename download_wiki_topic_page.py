@@ -13,7 +13,6 @@ def download_wiki_topic_page(topic_wiki_article_relative_url, topic):
         response_code = r.status_code
         
         if response_code == 200:
-            print('Encoding = ' + r.encoding)
             response_text = r.text
             print(
                 'Saving topic data to file: ' + target_content_file_path + '...'
