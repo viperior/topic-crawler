@@ -1,2 +1,2 @@
 # topic-crawler
-Automated topical discovery crawler
+Automated topic discovery crawler
