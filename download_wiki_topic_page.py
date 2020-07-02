@@ -27,4 +27,4 @@ def download_wiki_topic_page(topic_slug):
             print('URL: ' + wiki_article_url)
             print('Response code: ' + str(response_code))
             
-        time.sleep(3)
+        time.sleep(1)
