@@ -3,17 +3,12 @@ import extract_outbound_links
 import json
 import time
 
-def discover_topics(topic_wiki_article_relative_url, topic_article_file_path, 
-                    topic, crawl_distance=3, crawl_limit_per_node=10, 
+def discover_topics(topic_slug, crawl_distance=3, crawl_limit_per_node=10,
                     parent_breadcrumbs=None, verbose=False):
-    """Discover topics related to the starting topic.
+    """Discovers topics related to the starting topic with recursive exploration
 
     Keyword arguments:
-    topic_wiki_article_relative_url -- the relative URL of the current topic's
-        wiki page
-    topic_article_file_path -- the relative path the current topics downloaded
-        wiki article file
-    topic -- the current topic
+    topic_slug -- the slug for the current topic
     crawl_distance -- the max distance to crawl from the origin (default 3)
     crawl_limit_per_node -- the max number of linked topics to crawl per node 
         (default 10)
@@ -23,53 +18,84 @@ def discover_topics(topic_wiki_article_relative_url, topic_article_file_path,
         True (default False)
     """
     
-    # Create breadcrumbs.
-    if parent_breadcrumbs == None:
-        current_breadcrumbs = [topic]
-    else:
-        current_breadcrumbs = parent_breadcrumbs
-        current_breadcrumbs.append(topic)
-    
-    # Display breadcrumbs.
     if verbose:
-        print(' > '.join(current_breadcrumbs))
-    
-    # Download the current topic's wiki page.
-    download_wiki_topic_page.download_wiki_topic_page(
-        topic_wiki_article_relative_url=topic_wiki_article_relative_url,
-        topic=topic
-    )
-    
-    # Extract links from the current topic's wiki page.
-    extract_outbound_links.extract_outbound_links(
-        topic_article_file_path=topic_article_file_path,
-        topic=topic
-    )
-    
-    # Load the current topic's outbound link data.
-    outbound_links_file_path = 'data/outbound_links_' + \
-        topic.replace(' ', '_').lower() + '.json'
-    
-    with open(outbound_links_file_path, 'r') as outbound_links_file:
-        outbound_links_original = json.load(outbound_links_file)
-    
-    # Limit number of outbound links to crawl based on set limit.
-    outbound_links = {}
+        print('Calling discover_topics() function...')
+        print('Parameters:')
         
-    for link in outbound_links_original:
-        if outbound_links_original[link]['order_index'] + 1 <= crawl_limit_per_node:
-            outbound_links[link] = outbound_links_original[link]
+        parameters = [
+            ['topic_slug', topic_slug],
+            ['crawl_distance', crawl_distance],
+            ['crawl_limit_per_node', crawl_limit_per_node],
+            ['parent_breadcrumbs', parent_breadcrumbs],
+            ['verbose', verbose]
+        ]
+        
+        for parameter in parameters:
+            print(parameter[0] + ' = ' + str(parameter[1]))
     
-    # Crawl each outbound link.
-    for link in outbound_links:
+    # Create breadcrumbs and prevent back-tracking.
+    if parent_breadcrumbs == None:
+        current_breadcrumbs = [topic_slug]
+    else:
+        current_breadcrumbs = parent_breadcrumbs.copy()
+        current_breadcrumbs.append(topic_slug)
+    
+    if verbose:
+        if parent_breadcrumbs != None:
+            print('Parent breadcrumbs:')
+            print(' > '.join(parent_breadcrumbs))
+            
+        print('Current breadcrumbs:')
+        print(' > '.join(current_breadcrumbs))
+        
+        print('parent_breadcrumbs == None = ' + str(parent_breadcrumbs == None))
+        
+        if parent_breadcrumbs != None:
+            print('topic_slug = ' + topic_slug)
+            print('topic_slug in parent_breadcrumbs = ' + str(topic_slug in parent_breadcrumbs))
+            
+        time.sleep(1)
+        
+    if parent_breadcrumbs == None or not topic_slug in parent_breadcrumbs:
+        # Download the current topic's wiki page.
+        download_wiki_topic_page.download_wiki_topic_page(topic_slug)
+        
+        # Extract links from the current topic's wiki page.
+        extract_outbound_links.extract_outbound_links(topic_slug)
+        
+        # Load the current topic's outbound link data.
+        outlinks_file_path = 'data/outlinks_' + topic_slug + '.json'
+        
+        with open(outlinks_file_path, 'r') as outlinks_file:
+            outlinks_original = json.load(outlinks_file)
+        
+        # Limit number of outbound links to crawl based on set limit.
+        outlinks = {}
+            
+        for outlink_slug in outlinks_original:
+            if outlinks_original[outlink_slug]['order_index'] + 1 <= crawl_limit_per_node:
+                outlinks[outlink_slug] = outlinks_original[outlink_slug]
+                
+        # Crawl each outbound link if max crawl distance not reached.
         if crawl_distance > 0:
-            discover_topics(
-                topic_wiki_article_relative_url=outbound_links[link]['relative_url'],
-                topic_article_file_path='data/article-' + \
-                    topic.lower().replace(' ', '-') + '.html',
-                topic=link,
-                crawl_distance=crawl_distance - 1,
-                crawl_limit_per_node=crawl_limit_per_node,
-                parent_breadcrumbs=current_breadcrumbs,
-                verbose=verbose
+            new_crawl_distance = crawl_distance - 1
+            
+            for outlink_slug in outlinks:
+                discover_topics(
+                    topic_slug=outlink_slug,
+                    crawl_distance=new_crawl_distance,
+                    crawl_limit_per_node=crawl_limit_per_node,
+                    parent_breadcrumbs=current_breadcrumbs,
+                    verbose=verbose
+                )
+        else:
+            if verbose:
+                print('Disallowing crawl...')
+                print('Disallowed crawl at location: ' + ' > '.join(current_breadcrumbs))
+                print('Disallowed crawl at crawl distance = ' + str(crawl_distance))
+    else:
+        if verbose:
+            print(
+                'parent_breadcrumbs == None or topic_slug not in parent_breadcrumbs = ' \
+                + str(parent_breadcrumbs == None or topic_slug not in parent_breadcrumbs)
             )
