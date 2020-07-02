@@ -28,7 +28,13 @@ def extract_outbound_links(topic_article_file_path, topic):
             if link_href[0:6] == '/wiki/':
                 wiki_topic = link_href[6:].replace('_', ' ').lower()
                 
-                block_list = ['file:', 'help:', 'template:', 'wikipedia:']
+                block_list = [
+                    'file:',
+                    'help:',
+                    'talk:',
+                    'template:',
+                    'wikipedia:'
+                ]
                 topic_contains_block_list_item = False
                 
                 for item in block_list:
