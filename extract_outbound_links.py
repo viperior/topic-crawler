@@ -28,19 +28,34 @@ def extract_outbound_links(topic_slug):
         # Collect each unique link to another wiki topic.
         linked_slugs = {}
         order_index = 0
-        block_list = ['file:', 'help:', 'talk:', 'template:', 'wikipedia:']
+        block_list = [
+            'file:',
+            'help:',
+            'mos:',
+            'talk:',
+            'template:',
+            'wikipedia:'
+        ]
         
         for link in article_body_links:
             link_href = str(link.get('href'))
             
             if link_href[0:6] == '/wiki/':
                 current_link_slug = link_href[6:]
+                
+                # Handle links to named anchors.
+                if '#' in current_link_slug:
+                    new_current_link_slug = current_link_slug.split('#')[0]
+                    current_link_slug = new_current_link_slug
+                
+                # Handle links to a type of page on the block list.
                 current_link_slug_contains_block_list_item = False
                 
                 for item in block_list:
                     if item in current_link_slug.lower():
                         current_link_slug_contains_block_list_item = True
                 
+                # Process valid links.
                 if current_link_slug not in linked_slugs.keys() \
                     and not current_link_slug_contains_block_list_item:
                     linked_slugs[current_link_slug] = {
