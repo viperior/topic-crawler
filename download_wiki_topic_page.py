@@ -8,14 +8,7 @@ def download_wiki_topic_page(topic_wiki_article_relative_url, topic):
     wiki_article_url = 'https://en.wikipedia.org' + \
         topic_wiki_article_relative_url
     
-    if os.path.isfile(target_content_file_path):
-        print('Skipping download of wiki article. Copy already exists...')
-        print('Skipped: ' + wiki_article_url)
-    else:
-        print(
-            'Retrieving data on topic, ' + topic.lower() + ', from ' + \
-            wiki_article_url + '...'
-        )
+    if not os.path.isfile(target_content_file_path):
         r = requests.get(wiki_article_url)
         response_code = r.status_code
         
