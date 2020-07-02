@@ -6,10 +6,7 @@ def extract_outbound_links(topic_article_file_path, topic):
     output_data_file_path = 'data/outbound_links_' + topic.replace(' ', '_') + \
         '.json'
         
-    if os.path.isfile(output_data_file_path):
-        print('Skipping extraction of outbound links for file because they have previously been extracted:')
-        print(output_data_file_path)
-    else:
+    if not os.path.isfile(output_data_file_path):
         # Open the HTML file.
         with open(topic_article_file_path, 'r') as input_file:
             html = input_file.read()
