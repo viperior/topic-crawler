@@ -4,7 +4,8 @@ import json
 import time
 
 def discover_topics(topic_wiki_article_relative_url, topic_article_file_path, 
-                    topic, crawl_distance=3, crawl_limit_per_node=10):
+                    topic, crawl_distance=3, crawl_limit_per_node=10, 
+                    parent_breadcrumbs=None):
     """Discover topics related to the starting topic.
 
     Keyword arguments:
@@ -13,10 +14,11 @@ def discover_topics(topic_wiki_article_relative_url, topic_article_file_path,
     crawl_limit_per_node -- the max number of linked topics to crawl per node (default 10)
     """
     
-    print('Beginning topical discovery process...')
-    print('Starting topic = ' + topic)
-    print('Crawl distance = ' + str(crawl_distance))
-    
+    if parent_breadcrumbs == None:
+        current_breadcrumbs = topic
+    else:
+        current_breadcrumbs = parent_breadcrumbs + ' > ' + topic
+        
     download_wiki_topic_page.download_wiki_topic_page(
         topic_wiki_article_relative_url=topic_wiki_article_relative_url,
         topic=topic
@@ -38,17 +40,13 @@ def discover_topics(topic_wiki_article_relative_url, topic_article_file_path,
         if outbound_links_original[link]['order_index'] + 1 <= crawl_limit_per_node:
             outbound_links[link] = outbound_links_original[link]
             
-    print('Current topic = ' + topic)
-            
     for link in outbound_links:
-        if crawl_distance == 0:
-            print('Max crawl distance reached...')
-        else:
-            print('Branching to topic: ' + link)
+        if crawl_distance > 0:
             discover_topics(
                 topic_wiki_article_relative_url=outbound_links[link]['relative_url'],
                 topic_article_file_path='data/article-' + topic.lower().replace(' ', '-') + '.html',
                 topic=link,
                 crawl_distance=crawl_distance - 1,
-                crawl_limit_per_node=crawl_limit_per_node
+                crawl_limit_per_node=crawl_limit_per_node,
+                parent_breadcrumbs=current_breadcrumbs
             )
