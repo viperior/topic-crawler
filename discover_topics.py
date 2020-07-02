@@ -44,7 +44,8 @@ def discover_topics(topic_wiki_article_relative_url, topic_article_file_path,
         if crawl_distance > 0:
             discover_topics(
                 topic_wiki_article_relative_url=outbound_links[link]['relative_url'],
-                topic_article_file_path='data/article-' + topic.lower().replace(' ', '-') + '.html',
+                topic_article_file_path='data/article-' + \
+                    topic.lower().replace(' ', '-') + '.html',
                 topic=link,
                 crawl_distance=crawl_distance - 1,
                 crawl_limit_per_node=crawl_limit_per_node,
