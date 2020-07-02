@@ -1,5 +1,6 @@
 import os
 import requests
+import time
 
 def download_wiki_topic_page(topic_wiki_article_relative_url, topic):
     target_content_file_path = 'data/article-' + \
@@ -31,3 +32,5 @@ def download_wiki_topic_page(topic_wiki_article_relative_url, topic):
             print('Error occurred while trying to retrieve the page.')
             print('URL: ' + wiki_article_url)
             print('Response code: ' + str(response_code))
+            
+        time.sleep(3)

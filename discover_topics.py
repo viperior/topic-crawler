@@ -25,8 +25,6 @@ def discover_topics(topic_wiki_article_relative_url, topic_article_file_path,
         topic_article_file_path=topic_article_file_path,
         topic=topic
     )
-    print('Sleeping for 3 seconds...')
-    time.sleep(3)
     
     outbound_links_file_path = 'data/outbound_links_' + \
         topic.replace(' ', '_').lower() + '.json'
